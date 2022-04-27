@@ -8,7 +8,52 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <SplitView DisplayMode="CompactInline"
+               CompactPaneLength="50"
+               OpenPaneLength="250"
+               IsPaneOpen="False"
+               Name="mySplitView">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="mySplitView.IsPaneOpen"
+                                Value="False" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="mySplitView.IsPaneOpen"
+                                Value="True" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <SplitView.Pane>
+            <StackPanel>
+                <local:SplitPaneButton Icon="&#xe006;" Text="I'm alone"  Tapped="AloneButton_Tapped"/>
+                <local:SplitPaneButton Icon="&#xe76e;" Text="I'm with friends"  Tapped="FriendsButton_Tapped"/>
+                <local:SplitPaneButton Icon="&#xe102;" Text="Let's play!"  Tapped="PlayButton_Tapped"/>
+            </StackPanel>
+        </SplitView.Pane>
+        <SplitView.Content>
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBlock Text="Find an activity!" />
+                    <StackPanel>
+                        <local:AloneActivityComponent x:Name="alone" Visibility="Collapsed"/>
+                        <local:GroupActivityComponent x:Name="group" Visibility="Collapsed"/>
+                        <local:GameComponent x:Name="play" Visibility="Collapsed"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </SplitView.Content>
 
-    </Grid>
+    </SplitView>
 </Page>

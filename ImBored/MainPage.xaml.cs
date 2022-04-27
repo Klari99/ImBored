@@ -25,6 +25,31 @@ namespace ImBored
         public MainPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+
+
+
+        }
+
+        private void AloneButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            alone.Visibility = Visibility.Visible;
+            group.Visibility = Visibility.Collapsed;
+            play.Visibility = Visibility.Collapsed;
+        }
+
+        private void FriendsButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            alone.Visibility = Visibility.Collapsed;
+            group.Visibility = Visibility.Visible;
+            play.Visibility = Visibility.Collapsed;
+        }
+
+        private void PlayButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            alone.Visibility = Visibility.Collapsed;
+            group.Visibility = Visibility.Collapsed;
+            play.Visibility = Visibility.Visible;
         }
     }
 }
