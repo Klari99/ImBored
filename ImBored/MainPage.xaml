@@ -47,7 +47,7 @@
                 <StackPanel>
                     <TextBlock Text="Find an activity!" />
                     <StackPanel>
-                        <local:AloneActivityComponent x:Name="alone" Visibility="Collapsed"/>
+                        <local:AloneActivityComponent x:Name="alone" Visibility="Visible"/>
                         <local:GroupActivityComponent x:Name="group" Visibility="Collapsed"/>
                         <local:GameComponent x:Name="play" Visibility="Collapsed"/>
                     </StackPanel>

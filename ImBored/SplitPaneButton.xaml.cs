@@ -22,6 +22,8 @@ namespace ImBored
         private static SplitPaneButton clicked = null;
         private static readonly Windows.UI.Color indicatorBlue =
             Windows.UI.Color.FromArgb(255, 97, 177, 242);
+        private static readonly Windows.UI.Color systemColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"];
+
         private static void changeClicked(SplitPaneButton spb)
         {
             if (clicked == null)
@@ -78,7 +80,7 @@ namespace ImBored
                 if (value)
                 {
                     selectionIndicator.Fill =
-                        new SolidColorBrush(indicatorBlue);
+                        new SolidColorBrush(systemColor);
                     changeClicked(this);
                 }
                 else
