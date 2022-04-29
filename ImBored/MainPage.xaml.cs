@@ -13,22 +13,18 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace ImBored
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
+    //TODO: change visibility to converter binding
+    //game page
+    //nice ui
     public sealed partial class MainPage : Page
     {
         public MainPage()
         {
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
-
-
-
         }
 
         private void AloneButton_Tapped(object sender, TappedRoutedEventArgs e)

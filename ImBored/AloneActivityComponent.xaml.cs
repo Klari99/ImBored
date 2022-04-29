@@ -19,11 +19,6 @@ namespace ImBored
 {
     public sealed partial class AloneActivityComponent : StackPanel
     {
-        //TODO: change visibility to converter binding
-        //change hyperlink text
-        //fix accessibility
-        //nice ui
-
         private string _type = "random";
         private double _accessibility = -1;
         private bool _free = false;
@@ -107,13 +102,12 @@ namespace ImBored
         {
             Slider slider = sender as Slider;
             _accessibility = 1 - (slider.Value - (slider.Value % 5)) / 100;
-            slider.Header = "Accessibility: " + slider.Value.ToString();
+            slider.Header = "Minimum accessibility: " + slider.Value.ToString() + "%";
         }
 
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             _free = freeCheckBox.IsChecked.GetValueOrDefault(false);
-            result.Visibility = Visibility.Visible;
             await getAPIAnswer();
         }
 
@@ -138,9 +132,9 @@ namespace ImBored
             }
 
             var response = await hc.GetAsync(url);
-            string result = await response.Content.ReadAsStringAsync();
+            string responseText = await response.Content.ReadAsStringAsync();
 
-            ActivityResult activity = Newtonsoft.Json.JsonConvert.DeserializeObject<ActivityResult>(result);
+            ActivityResult activity = Newtonsoft.Json.JsonConvert.DeserializeObject<ActivityResult>(responseText);
             Activity = activity.Activity;
             Type = activity.Type;
             if(activity.Link != "" && activity.Link != null)
@@ -150,10 +144,12 @@ namespace ImBored
             }
             else
             {
+                linkTextBlock.Visibility = Visibility.Collapsed;
                 Link = "";
             }
 
             double access = (1 - activity.Accessibility) * 100;
+            if (access == 0) access++;
             Accessibility = access.ToString() + "%";
             if (activity.Price != 0.0)
             {
@@ -166,13 +162,14 @@ namespace ImBored
 
             if (activity.Activity == null)
             {
-                resultTextBlock.Text = "No activity found. Try with another options!";
+                resultTextBlock.Visibility = Visibility.Visible;
+                result.Visibility = Visibility.Collapsed;
             }
             else
             {
-                resultTextBlock.Text = "Here is your result:";
+                result.Visibility = Visibility.Visible;
+                resultTextBlock.Visibility = Visibility.Collapsed;
             }
         }
-
     }
 }

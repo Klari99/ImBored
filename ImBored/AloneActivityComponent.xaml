@@ -24,7 +24,7 @@
         Width="200"
         Margin="10 10"
         Maximum="100"
-        Minimum="0"
+        Minimum="1"
         TickFrequency="25"
         TickPlacement="BottomRight"
         ValueChanged="AccessibilitySlider_ValueChanged"
@@ -46,8 +46,10 @@
         Click="SearchButton_Click">
     </Button>
 
+    <TextBlock x:Name="resultTextBlock" Visibility="Collapsed" Margin="10 10" TextAlignment="Center">No activity found. Try with another options!</TextBlock>
+
     <StackPanel x:Name="result" Visibility="Collapsed">
-        <TextBlock x:Name="resultTextBlock" Margin="10 10" TextAlignment="Center">Here is your result:</TextBlock>
+        <TextBlock Margin="10 10" TextAlignment="Center">Here is your result:</TextBlock>
 
         <TextBlock Margin="10 10" TextAlignment="Center" Text="{Binding ElementName=aloneActivity, Path=Activity, Mode=OneWay}"/>
         <TextBlock Margin="10 10" TextAlignment="Center">
@@ -57,8 +59,13 @@
             </Span>
         </TextBlock>
         <TextBlock x:Name="linkTextBlock" Margin="10 10" TextAlignment="Center" Visibility="Collapsed">
+            <Span>Link to the activity: </Span>
             <Span>
-                <Hyperlink NavigateUri="{Binding Link, Mode=OneWay}">Link to the activity</Hyperlink>
+                <Hyperlink NavigateUri="{Binding ElementName=aloneActivity, Path=Link, Mode=OneWay}">
+                    <Span>
+                        <Run Text="{Binding ElementName=aloneActivity, Path=Link, Mode=OneWay}"/>
+                    </Span>
+                </Hyperlink>
             </Span>
         </TextBlock>
         <TextBlock Margin="10 10" TextAlignment="Center">
