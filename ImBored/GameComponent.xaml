@@ -29,9 +29,6 @@
     </TextBlock>
 
     <Grid Height="300" Width="450">
-        <Canvas x:Name="gameCanvas" Height="300" Width="450">
-            <Rectangle Width="450" Height="300" Fill="Black" Stroke="DarkGray" 
-                Canvas.Top="0" Canvas.Left="0" StrokeThickness="1" />
-        </Canvas>
+        <Canvas x:Name="gameCanvas" Height="300" Width="450"/>
     </Grid>
 </StackPanel>

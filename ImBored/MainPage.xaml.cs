@@ -17,7 +17,6 @@ namespace ImBored
 {
 
     //TODO: change visibility to converter binding
-    //game page
     //nice ui
     public sealed partial class MainPage : Page
     {

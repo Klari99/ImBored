@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,8 +22,6 @@ using Windows.UI.Xaml.Shapes;
 namespace ImBored
 
     //todo: csak ezen az oldalon hallhassa a keyeventet
-    //todo: timer startkor induljon el,
-    //todo: highscore and score load/save
 {
     public sealed partial class GameComponent : StackPanel
     {
@@ -28,19 +29,13 @@ namespace ImBored
         Random random = new Random();
 
         private bool isRunning = false;
-        private int speed = 5;
+        private int speed = 4;
         private double jumpHeight = 150;
         private double playerFloorHeight = 225;
         private int currentTime = 0;
         private int nextObstacleSpawningTime = 10;
 
         Ellipse player = null;
-
-        //todo: make it concurrent
-        //ConcurrentDictionary<int, Rectangle> obstacles = new ConcurrentDictionary<int, Rectangle>(2, 50);
-        //TryAdd(nextObstacleSpawningTime, rectangle)
-        //TryRemove(nextObstacleSpawningTime, rectangle)
-        //foreach (var obstacle in obstacles)
         List<Rectangle> obstacles = new List<Rectangle>();
 
         private bool isJumping = false;
@@ -50,13 +45,30 @@ namespace ImBored
             this.InitializeComponent();
             drawGameArea();
             drawPlayer(50, playerFloorHeight);
+            loadHighScore();
 
             Window.Current.CoreWindow.KeyDown += KeyDown_Event;
         }
 
+        private void drawGameCanvas()
+        {
+            drawGameArea();
+            drawPlayer(player.ActualOffset.X, player.ActualOffset.Y);
+            drawObstacles();
+        }
+
         private void drawGameArea()
         {
-            gameCanvas.Children.Clear();
+            Rectangle frame = new Rectangle();
+            frame.Width = 450;
+            frame.Height = 300;
+
+            frame.Fill = new SolidColorBrush(Colors.Black);
+            frame.StrokeThickness = 1;
+            frame.Stroke = new SolidColorBrush(Colors.DarkGray);
+            Canvas.SetLeft(frame, 0);
+            Canvas.SetTop(frame, 0);
+            gameCanvas.Children.Add(frame);
 
             Line line = new Line();
             line.X1 = 0;
@@ -86,6 +98,14 @@ namespace ImBored
             gameCanvas.Children.Add(player);
         }
 
+        private void drawObstacles()
+        {
+            foreach (Rectangle obstacle in obstacles)
+            {
+                gameCanvas.Children.Add(obstacle);
+            }
+        }
+
         private void KeyDown_Event(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
         {
             if(!isRunning)
@@ -101,6 +121,7 @@ namespace ImBored
             isRunning = true;
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            //timer.Interval = TimeSpan.FromMilliseconds(0.02);
             timer.Tick += Timer_Tick;
             timer.Start();
         }
@@ -108,37 +129,83 @@ namespace ImBored
         private void stopGame()
         {
             isRunning = false;
-            //todo: reset game
             timer.Stop();
+            handleHihgScore();
+            showScore();
+            resetGame();
+        }
+
+        private void resetGame()
+        {
+            isRunning = false;
+            currentTime = 0;
+            nextObstacleSpawningTime = 10;
+            Score = 0;
+            gameCanvas.Children.Clear();
+            drawGameArea();
+            drawPlayer(50, playerFloorHeight);
+            obstacles.Clear();
+        }
+
+        private async void showScore()
+        {
+            ContentDialog cd = new ContentDialog()
+            {
+                CloseButtonText = "OK",
+                Content = "Your score: " + Score.ToString(),
+                Title = "GAME OVER"
+            };
+            await cd.ShowAsync();
+        }
+
+        private void handleHihgScore()
+        {
+            if(Score > HighScore)
+            {
+                HighScore = Score;
+                saveHighScore();
+            }
+        }
+
+        private Task loadHighScore()
+        {
+            ApplicationDataContainer ls = ApplicationData.Current.LocalSettings;
+            if (ls.Values.ContainsKey("HighScore"))
+            {
+                HighScore = int.Parse(ls.Values["HighScore"].ToString());
+            }
+            else
+            {
+                HighScore = 0;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private void saveHighScore()
+        {
+            ApplicationDataContainer ls = ApplicationData.Current.LocalSettings;
+            ls.Values["HighScore"] = HighScore;
         }
 
         private void Timer_Tick(object sender, object e)
         {
-            //todo: clear canvas and make a draw method
-            
-
-            foreach (Rectangle obstacle in obstacles)
-            {
-                //todo: collision
-            }
-
             currentTime++;
             Score = currentTime;
 
+            if (obstacles.Any(obstacle => collidesWithPlayer(obstacle)))
+            {
+                stopGame();
+            }
+
+            obstacles.RemoveAll(obstacle => obstacle.ActualOffset.X <= 0);
+
+            gameCanvas.Children.Clear();
+            drawGameCanvas();
+
             if(currentTime == nextObstacleSpawningTime)
             {
-
-                //todo: separe this to a method
-                nextObstacleSpawningTime = currentTime + random.Next(30, 80);
-                Rectangle obstacle = new Rectangle();
-                obstacle.Width = 30;
-                obstacle.Height = 30;
-
-                obstacle.Fill = new SolidColorBrush(Colors.White);
-                Canvas.SetLeft(obstacle, 450);
-                Canvas.SetTop(obstacle, 220);
-                gameCanvas.Children.Add(obstacle);
-                obstacles.Add(obstacle);
+                spawnObstacle();
             }
 
             foreach (Rectangle obstacle in obstacles)
@@ -176,13 +243,47 @@ namespace ImBored
 
         private void moveLeft(Rectangle obstacle)
         {
-            if(obstacle.ActualOffset.X + obstacle.Width <= 0)
-            {
-                //obstacles.Remove(obstacle);
-                return;
-            }
-
             Canvas.SetLeft(obstacle, obstacle.ActualOffset.X - speed);
+        }
+
+        private bool collidesWithPlayer(Rectangle obstacle)
+        {
+            Rectangle playerRect = new Rectangle();
+            playerRect.Width = player.Width;
+            playerRect.Height = player.Height;
+
+            Canvas.SetLeft(playerRect, player.ActualOffset.X);
+            Canvas.SetTop(playerRect, player.ActualOffset.Y);
+
+            if (((playerRect.ActualOffset.X < (obstacle.ActualOffset.X + obstacle.Width)) && (obstacle.ActualOffset.X < (playerRect.ActualOffset.X + playerRect.Width))) && (playerRect.ActualOffset.Y < (obstacle.ActualOffset.Y + obstacle.Height)) && (obstacle.ActualOffset.Y < (playerRect.ActualOffset.Y + playerRect.Height)))
+            {
+                Vector2 rect1Centre = new Vector2((float)(playerRect.ActualOffset.X + playerRect.Width / 2), (float)(playerRect.ActualOffset.Y + playerRect.Height / 2));
+                Vector2 rect2Centre = new Vector2((float)(obstacle.ActualOffset.X + obstacle.Width / 2), (float)(obstacle.ActualOffset.Y + playerRect.Height / 2));
+                double radius1 = ((playerRect.Width / 2) + (playerRect.Height / 2)) / 2;
+                double radius2 = ((obstacle.Width / 2) + (obstacle.Height / 2)) / 2;
+
+                double widthTri = rect1Centre.X - rect2Centre.X;
+                double heightTri = rect1Centre.Y - rect2Centre.Y;
+                double distance = Math.Sqrt(Math.Pow(widthTri, 2) + Math.Pow(heightTri, 2));
+
+                if (distance <= (radius1 + radius2))
+                    return true;
+            }
+            return false;
+        }
+
+        private void spawnObstacle()
+        {
+            nextObstacleSpawningTime = currentTime + random.Next(30, 80);
+            Rectangle obstacle = new Rectangle();
+            obstacle.Width = 30;
+            obstacle.Height = 30;
+
+            obstacle.Fill = new SolidColorBrush(Colors.White);
+            Canvas.SetLeft(obstacle, 420);
+            Canvas.SetTop(obstacle, 220);
+            gameCanvas.Children.Add(obstacle);
+            obstacles.Add(obstacle);
         }
 
         public static readonly DependencyProperty TimeProperty =
@@ -208,6 +309,16 @@ namespace ImBored
 
         public static readonly DependencyProperty ScoreProperty =
             DependencyProperty.Register("Score", typeof(int),
+                typeof(GameComponent), null);
+
+        public int HighScore
+        {
+            get { return (int)GetValue(HighScoreProperty); }
+            set { SetValue(HighScoreProperty, value); }
+        }
+
+        public static readonly DependencyProperty HighScoreProperty =
+            DependencyProperty.Register("HighScore", typeof(int),
                 typeof(GameComponent), null);
     }
 }
