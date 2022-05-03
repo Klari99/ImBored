@@ -10,23 +10,32 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <TextBlock>
+    <Grid Margin="0 0 0 15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*" />
+            <ColumnDefinition Width="50*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Margin="15 0 0 0" FontSize="18">
         <Span>
             Score: 
         </Span>
         <Span>
             <Run x:Name="score" Text="{Binding ElementName=game, Path=Score, Mode=OneWay}"/>
         </Span>
-    </TextBlock>
+        </TextBlock>
 
-    <TextBlock>
+        <TextBlock Grid.Column="1" TextAlignment="Right" Margin="0 0 15 0" FontSize="18">
         <Span>
             Highscore: 
         </Span>
         <Span>
             <Run Text="{Binding ElementName=game, Path=HighScore, Mode=OneWay}"/>
         </Span>
-    </TextBlock>
+        </TextBlock>
+    </Grid>
+
+    
 
     <Grid Height="300" Width="450">
         <Canvas x:Name="gameCanvas" Height="300" Width="450"/>

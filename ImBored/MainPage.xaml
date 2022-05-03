@@ -45,7 +45,7 @@
         <SplitView.Content>
             <ScrollViewer>
                 <StackPanel>
-                    <TextBlock Text="Find an activity!" />
+                    <TextBlock Text="Find an activity!" FontWeight="Bold" TextAlignment="Center" Margin="0 25 0 25" FontSize="30"/>
                     <StackPanel>
                         <local:AloneActivityComponent x:Name="alone" Visibility="Visible"/>
                         <local:GroupActivityComponent x:Name="group" Visibility="Collapsed"/>

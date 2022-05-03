@@ -20,8 +20,6 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 namespace ImBored
-
-    //todo: csak ezen az oldalon hallhassa a keyeventet
 {
     public sealed partial class GameComponent : StackPanel
     {
@@ -106,33 +104,46 @@ namespace ImBored
             }
         }
 
-        private void KeyDown_Event(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
-        {
-            if(!isRunning)
+        public void KeyDown_Event(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+        {   
+            if(this.Visibility == Visibility.Visible)
             {
-                startGame();
+                if (!isRunning)
+                {
+                    startGame();
+                }
+                jump();
             }
-            jump();
         }
 
         private void startGame()
         {
-            Score = 0;
-            isRunning = true;
-            timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            //timer.Interval = TimeSpan.FromMilliseconds(0.02);
-            timer.Tick += Timer_Tick;
-            timer.Start();
+            if (this.Visibility == Visibility.Visible)
+            { 
+                Score = 0;
+                isRunning = true;
+                timer = new DispatcherTimer();
+                timer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+                timer.Tick += Timer_Tick;
+                timer.Start();
+            }
         }
 
         private void stopGame()
         {
-            isRunning = false;
-            timer.Stop();
-            handleHihgScore();
-            showScore();
-            resetGame();
+            if(isRunning && this.Visibility == Visibility.Visible)
+            {
+                isRunning = false;
+                timer.Stop();
+                handleHighScore();
+                showScore();
+                resetGame();
+            }
+            else
+            {
+                timer.Stop();
+                resetGame();
+            }
         }
 
         private void resetGame()
@@ -158,14 +169,14 @@ namespace ImBored
             await cd.ShowAsync();
         }
 
-        private void handleHihgScore()
+        private void handleHighScore()
         {
             if(Score > HighScore)
             {
                 HighScore = Score;
                 saveHighScore();
             }
-        }
+        }        
 
         private Task loadHighScore()
         {
@@ -193,7 +204,7 @@ namespace ImBored
             currentTime++;
             Score = currentTime;
 
-            if (obstacles.Any(obstacle => collidesWithPlayer(obstacle)))
+            if (obstacles.Any(obstacle => collidesWithPlayer(obstacle)) || this.Visibility != Visibility.Visible)
             {
                 stopGame();
             }
@@ -205,6 +216,7 @@ namespace ImBored
 
             if(currentTime == nextObstacleSpawningTime)
             {
+                nextObstacleSpawningTime = currentTime + random.Next(30, 90);
                 spawnObstacle();
             }
 
@@ -213,6 +225,7 @@ namespace ImBored
                 moveLeft(obstacle);
             }
 
+            //player movement
             if (isJumping && player.ActualOffset.Y > jumpHeight)
             {
                 Canvas.SetTop(player, player.ActualOffset.Y - speed);
@@ -274,7 +287,6 @@ namespace ImBored
 
         private void spawnObstacle()
         {
-            nextObstacleSpawningTime = currentTime + random.Next(30, 80);
             Rectangle obstacle = new Rectangle();
             obstacle.Width = 30;
             obstacle.Height = 30;

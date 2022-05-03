@@ -14,12 +14,13 @@
         x:Name="typeComboBox" 
         Header="Select an activity type"
         Margin="10 10"
-        SelectionChanged="TypeComboBox_SelectionChanged">
+        SelectionChanged="TypeComboBox_SelectionChanged"
+         HorizontalAlignment="Center">
     </ComboBox>
 
     <Slider
         x:Name="participantsSlider"
-        Header="Minimum participants: 2"
+        Header="Participants: 2"
         Width="200"
         Margin="10 10"
         Maximum="5"
@@ -27,8 +28,8 @@
         TickFrequency="1"
         TickPlacement="BottomRight"
         ValueChanged="ParticipantsSlider_ValueChanged"
-        Orientation="Horizontal">
-    </Slider>
+        Orientation="Horizontal"/>
+
 
 
     <Slider
@@ -41,24 +42,25 @@
         TickFrequency="25"
         TickPlacement="BottomRight"
         ValueChanged="AccessibilitySlider_ValueChanged"
-        Orientation="Horizontal">
-    </Slider>
+        Orientation="Horizontal"/>
 
-    <CheckBox x:Name="freeCheckBox" Content="Activity should be free" Margin="10 10"/>
+
+    <CheckBox x:Name="freeCheckBox" Content="Activity should be free" Margin="0 10"  HorizontalAlignment="Center"/>
 
     <Button
         x:Name="searchButton" 
         Margin="10 10"
         Content="Search activity"
-        Click="SearchButton_Click">
-    </Button>
+        Click="SearchButton_Click"
+        HorizontalAlignment="Center"/>
 
-    <TextBlock x:Name="resultTextBlock" Visibility="Collapsed" Margin="10 10" TextAlignment="Center">No activity found. Try with another options!</TextBlock>
+
+    <TextBlock x:Name="resultTextBlock" Visibility="Collapsed" Margin="10 10" FontWeight="Bold" FontSize="15" TextAlignment="Center">No activity found. Try with another options!</TextBlock>
 
     <StackPanel x:Name="result" Visibility="Collapsed">
-        <TextBlock Margin="10 10" TextAlignment="Center">Here is your result:</TextBlock>
+        <TextBlock Margin="10 10" TextAlignment="Center" FontSize="30">Here is your result:</TextBlock>
 
-        <TextBlock Margin="10 10" TextAlignment="Center" Text="{Binding ElementName=groupActivity, Path=Activity, Mode=OneWay}"/>
+        <TextBlock Margin="10 10" TextAlignment="Center" FontWeight="Bold" FontSize="15" Text="{Binding ElementName=groupActivity, Path=Activity, Mode=OneWay}"/>
         <TextBlock Margin="10 10" TextAlignment="Center">
             <Span>Type: </Span>
             <Span>

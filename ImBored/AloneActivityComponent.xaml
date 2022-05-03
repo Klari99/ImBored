@@ -14,9 +14,8 @@
         x:Name="typeComboBox" 
         Header="Select an activity type"
         Margin="10 10"
-        SelectionChanged="TypeComboBox_SelectionChanged">
-    </ComboBox>
-
+        SelectionChanged="TypeComboBox_SelectionChanged"
+        HorizontalAlignment="Center"/>
 
     <Slider
         x:Name="accessibilitySlider"
@@ -28,30 +27,33 @@
         TickFrequency="25"
         TickPlacement="BottomRight"
         ValueChanged="AccessibilitySlider_ValueChanged"
-        Orientation="Horizontal">
-    </Slider>
+        Orientation="Horizontal"/>
+
     <TextBlock
         x:Name="accessibilityTextBlock"
         Margin="10 0"
         Text="Drag the slider thumb to change event accessibility."
-        TextWrapping="Wrap">
-    </TextBlock>
+        TextWrapping="Wrap"
+        TextAlignment="Center"
+        HorizontalAlignment="Center"/>
 
-    <CheckBox x:Name="freeCheckBox" Content="Activity should be free" Margin="10 10"/>
+
+    <CheckBox x:Name="freeCheckBox" Content="Activity should be free" Margin="10 10" HorizontalAlignment="Center"/>
 
     <Button
         x:Name="searchButton" 
         Margin="10 10"
         Content="Search activity"
-        Click="SearchButton_Click">
-    </Button>
+        Click="SearchButton_Click"
+        HorizontalAlignment="Center"/>
 
-    <TextBlock x:Name="resultTextBlock" Visibility="Collapsed" Margin="10 10" TextAlignment="Center">No activity found. Try with another options!</TextBlock>
+
+    <TextBlock x:Name="resultTextBlock" Visibility="Collapsed" Margin="10 10" FontWeight="Bold" FontSize="15" TextAlignment="Center">No activity found. Try with another options!</TextBlock>
 
     <StackPanel x:Name="result" Visibility="Collapsed">
-        <TextBlock Margin="10 10" TextAlignment="Center">Here is your result:</TextBlock>
+        <TextBlock Margin="10 10" TextAlignment="Center" FontSize="30">Here is your result:</TextBlock>
 
-        <TextBlock Margin="10 10" TextAlignment="Center" Text="{Binding ElementName=aloneActivity, Path=Activity, Mode=OneWay}"/>
+        <TextBlock Margin="10 10" TextAlignment="Center" FontWeight="Bold" FontSize="15" Text="{Binding ElementName=aloneActivity, Path=Activity, Mode=OneWay}"/>
         <TextBlock Margin="10 10" TextAlignment="Center">
             <Span>Type: </Span>
             <Span>

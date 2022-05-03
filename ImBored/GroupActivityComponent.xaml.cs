@@ -120,7 +120,7 @@ namespace ImBored
         {
             Slider slider = sender as Slider;
             _participants = (int)slider.Value;
-            slider.Header = "Minimum participants: " + slider.Value.ToString();
+            slider.Header = "Participants: " + slider.Value.ToString();
         }
 
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
